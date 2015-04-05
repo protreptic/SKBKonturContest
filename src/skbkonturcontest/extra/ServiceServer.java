@@ -13,14 +13,14 @@ public class ServiceServer {
 
 	public static void main(String[] args) {
 		//String pathToVocabulary = args[0];
-		//int port = Integer.valueOf(args[1]);
+		int port = Integer.valueOf(args[0]);
 		
 		Vocabulary dictionary = new ListVocabulary("/home/petronic/Загрузки/Тестовое задание Java/test.in");
 		
 		ExecutorService executorService = Executors.newCachedThreadPool();
 		
 		try {
-			ServerSocket serverSocket = new ServerSocket(34123);
+			ServerSocket serverSocket = new ServerSocket(port);
 			
 			while (true) {
 				Socket socket = serverSocket.accept();

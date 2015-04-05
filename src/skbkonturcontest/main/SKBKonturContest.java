@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 public class SKBKonturContest {
 
 	public static void main(String[] args) {
-		Vocabulary dictionary = new CopyOfTrieVocabulary("/home/petronic/Загрузки/Тестовое задание Java/test.in");
+		Vocabulary dictionary = new TrieVocabulary("/home/petronic/Загрузки/Тестовое задание Java/test.in");
 		UserQueries userQueries = new UserQueries("/home/petronic/Загрузки/Тестовое задание Java/test.in");
 
 		ExecutorService exec = Executors.newCachedThreadPool();
@@ -16,7 +16,7 @@ public class SKBKonturContest {
 		Timestamp begin = new Timestamp(System.currentTimeMillis());
 		
 		for (String userQuery : userQueries.getUserQueries()) {
-			exec.execute(new CopyOfTrieSuggestionQuery(dictionary, userQuery));
+			exec.execute(new TrieSuggestionQuery(dictionary, userQuery));
 		}
 
 		exec.shutdown();

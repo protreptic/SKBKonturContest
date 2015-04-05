@@ -1,7 +1,5 @@
 package skbkonturcontest.main;
 
-import java.util.List;
-
 public class TrieSuggestionQuery implements Runnable {
 
 	private Vocabulary vocabulary;

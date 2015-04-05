@@ -18,20 +18,15 @@ public class CopyOfTrieVocabulary implements Vocabulary {
 
 		public TrieNode(int value) {
 			this.value = value;
-			firstChild = null;
-			nextSibling = null;
 		}
 		
 	}
 	
-	private TrieNode rootNode;
-	private int size;
+	private TrieNode rootNode = new TrieNode('r');
+	private int size = 0;
 	private int maxDepth;
 	
 	public CopyOfTrieVocabulary(String path) {
-		rootNode = new TrieNode('r');
-		size = 0;
-		
 		openDictionary(path); 
 	}
 

@@ -18,20 +18,15 @@ public class TrieVocabulary implements Vocabulary {
 
 		public TrieNode(int value) {
 			this.value = value;
-			firstChild = null;
-			nextSibling = null;
 		}
 		
 	}
 	
-	private TrieNode rootNode;
-	private int size;
+	private TrieNode rootNode = new TrieNode('r');
+	private int size = 0;
 	private int maxDepth;
 	
 	public TrieVocabulary(String path) {
-		rootNode = new TrieNode('r');
-		size = 0;
-		
 		openDictionary(path); 
 	}
 
@@ -67,10 +62,10 @@ public class TrieVocabulary implements Vocabulary {
 	}
 	
 	public String[] findSuggestions(String prefix) {
-		return suggest(prefix); 
+		return suggest(rootNode, prefix, 0);
 	}
 	
-	public boolean add(String word) {
+	private boolean add(String word) {
 		if (add(rootNode, word, 0)) {
 			size++;
 			int n = word.length();
@@ -86,37 +81,28 @@ public class TrieVocabulary implements Vocabulary {
 		if (offset == word.length()) return false;
 		int c = word.charAt(offset);
 
-		// Search for node to add to
 		TrieNode last = null, next = root.firstChild;
 		while (next != null) {
 			if (next.value < c) {
-				// Not found yet, continue searching
 				last = next;
 				next = next.nextSibling;
 			} else if (next.value == c) {
-				// Match found, add remaining word to this node
 				return add(next, word, offset + 1);
 			}
 			
-			// Because of the ordering of the list getting here means we won't
-			// find a match
 			else break;
 		}
 
-		// No match found, create a new node and insert
 		TrieNode node = new TrieNode(c);
 		
 		if (last == null) {
-			// Insert node at the beginning of the list (Works for next == null too)
 			root.firstChild = node;
 			node.nextSibling = next;
 		} else {
-			// Insert between last and next
 			last.nextSibling = node;
 			node.nextSibling = next;
 		}
 
-		// Add remaining letters
 		for (int i = offset + 1; i < word.length(); i++) {
 			node.firstChild = new TrieNode(word.charAt(i));
 			node = node.firstChild;
@@ -125,41 +111,36 @@ public class TrieVocabulary implements Vocabulary {
 		return true;
 	}
 
-	/*
-	 * Adds any words found in this branch to the array
-	 */
-	private void getAll(TrieNode root, ArrayList<String> words, char[] chars, int pointer) {
-		TrieNode n = root.firstChild;
-		while (n != null) {
-			if (n.firstChild == null) {
+	private void collect(TrieNode root, List<String> words, char[] chars, int pointer) {
+		TrieNode node = root.firstChild;
+		
+		while (node != null) {
+			if (node.firstChild == null) {
 				words.add(new String(chars, 0, pointer));
 			} else {
-				chars[pointer] = (char)n.value;
-				getAll(n, words, chars, pointer + 1);
+				chars[pointer] = (char) node.value;
+				collect(node, words, chars, pointer + 1);
 			}
-			n = n.nextSibling;
+			node = node.nextSibling;
 		}
-	}
-
-	public String[] suggest(String prefix) {
-		return suggest(rootNode, prefix, 0);
 	}
 
 	private String[] suggest(TrieNode root, String word, int offset) {
 		if (offset == word.length()) {
-			ArrayList<String> words = new ArrayList<String>(size);
+			List<String> words = new ArrayList<String>(size);
 			char[] chars = new char[maxDepth];
 			for (int i = 0; i < offset; i++)
 				chars[i] = word.charAt(i);
-			getAll(root, words, chars, offset);
+			collect(root, words, chars, offset);
 			if (words.size() > 10) {
 				return words.subList(0, 10).toArray(new String[10]);
 			}
+			
 			return words.toArray(new String[words.size()]);
 		}
+		
 		int c = word.charAt(offset);
 
-		// Search for node to add to
 		TrieNode next = root.firstChild;
 		while (next != null) {
 			if (next.value < c) next = next.nextSibling;
