@@ -1,37 +1,22 @@
 package skbkonturcontest.extra;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import skbkonturcontest.main.ListVocabulary;
-import skbkonturcontest.main.Vocabulary;
+import skbkonturcontest.main.TrieVocabulary;
 
 public class ServiceServer {
 
 	public static void main(String[] args) {
-		//String pathToVocabulary = args[0];
-		int port = Integer.valueOf(args[0]);
-		
-		Vocabulary dictionary = new ListVocabulary("/home/petronic/Загрузки/Тестовое задание Java/test.in");
-		
-		ExecutorService executorService = Executors.newCachedThreadPool();
-		
-		try {
-			ServerSocket serverSocket = new ServerSocket(port);
-			
-			while (true) {
-				Socket socket = serverSocket.accept();
-				executorService.execute(new ClientThread(socket, dictionary)); 
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (args.length != 2) {
+			usageDescription();
+			System.exit(1);
 		}
+		
+		String pathToVocabulary = args[0];
+		int port = Integer.valueOf(args[1]);
+		
+		new ServerNetworkThread(new TrieVocabulary(pathToVocabulary), port).start();
 	}
 
-	public void usageDescription() {
+	public static void usageDescription() {
 		System.out.println("Usage: <path_to_vocabulary> <port>");
 	}
 

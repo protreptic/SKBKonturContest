@@ -7,25 +7,26 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Scanner;
-import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import skbkonturcontest.main.Vocabulary;
-
-public class ClientThread implements Runnable {
+public class ClientNetworkThread extends Thread {
 	
 	private Socket socket;
 	
 	private volatile Boolean connected;
 	
-	private Vocabulary vocabulary;
-	
-	public ClientThread(Socket socket, Vocabulary vocabulary) {
-		this.socket = socket;
-		this.vocabulary  = vocabulary;
+	public ClientNetworkThread(String server, int port) {
+		try {
+			socket = new Socket(server, port);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		connected = true;
 	}
@@ -42,11 +43,7 @@ public class ClientThread implements Runnable {
 		}
 		
 		while (connected) {
-			try {
-				TimeUnit.MILLISECONDS.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			
 		}
 		
 		executorService.shutdown();
@@ -77,38 +74,19 @@ public class ClientThread implements Runnable {
 			while (connected) {
 				try {
 					if (reader.ready()) {
-						String command = reader.readLine();
+						String message = reader.readLine();
 						
-						if (command != null && !command.isEmpty()) {
-							if (command.startsWith("get ")) {
-								StringTokenizer tokenizer = new StringTokenizer(command);
-								tokenizer.nextToken();
-								
-								String prefix = tokenizer.nextToken();
-								
-								String[] suggestions = vocabulary.findSuggestions(prefix);
-								
+						if (message != null && !message.isEmpty()) {
+							if (message.equals("disconnect")) {
+								connected = false;
+							} else {
 								synchronized (System.out) {
-									System.out.println("[" + socket.getInetAddress() + ":" + socket.getPort() + "]: get -> " + prefix + " (" + ((suggestions != null) ? suggestions.length : "0") + ")"); 
-								}
-								
-								if (suggestions != null) {
-									for (String suggestion : suggestions) {
-										PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-										
-										writer.println(suggestion);
-									}
+									System.out.println(message); 
 								}
 							}
 						}
 					}
 				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				
-				try {
-					TimeUnit.MILLISECONDS.sleep(100);
-				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
@@ -133,7 +111,7 @@ public class ClientThread implements Runnable {
 					String command = scanner.nextLine();
 					
 					if (command != null && !command.isEmpty()) {
- 						if (command.startsWith("get ")) {
+						if (command.startsWith("get ")) {
 							writer.println(command); 
 						} else if (command.startsWith("quit")) {
 							connected = false;
@@ -143,12 +121,6 @@ public class ClientThread implements Runnable {
 							}
 						}
 					}
-				}
-				
-				try {
-					TimeUnit.MILLISECONDS.sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
 				}
 			}
 			

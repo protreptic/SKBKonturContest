@@ -56,11 +56,6 @@ public class TrieVocabulary implements Vocabulary {
 		}
 	}
 	
-	@Override
-	public List<Word> findSuggestions(String prefix, Integer maxSuggestions) {
-		return null; 
-	}
-	
 	public String[] findSuggestions(String prefix) {
 		return suggest(rootNode, prefix, 0);
 	}
