@@ -1,14 +1,19 @@
 package skbkonturcontest.main;
 
-import java.io.BufferedReader;
+import java.io.BufferedReader; 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 public class TrieVocabulary implements Vocabulary {
+	
+	private Map<String, Integer> occr = new HashMap<String, Integer>();
 	
 	private class TrieNode {
 		
@@ -44,7 +49,9 @@ public class TrieVocabulary implements Vocabulary {
 				String text = tokenizer.nextToken();
 				Integer occurrenceFrequency = Integer.valueOf(tokenizer.nextToken()); 
 				
-				add(text);
+				occr.put(text, occurrenceFrequency);
+				
+				addWord(text);
 			}
 			
 			reader.close();
@@ -56,11 +63,23 @@ public class TrieVocabulary implements Vocabulary {
 		}
 	}
 	
-	public String[] findSuggestions(String prefix) {
-		return suggest(rootNode, prefix, 0);
+	public List<Word> findSuggestions(String prefix) {
+		List<Word> words = new ArrayList<Word>();
+		
+		for (String string : suggest(rootNode, prefix, 0)) {
+			Word word = new Word();
+			word.setText(string); 
+			word.setOccurenceFrequency(occr.get(string));  
+  			
+			words.add(word);
+		}
+		
+		Collections.sort(words, null);
+		
+		return words;
 	}
 	
-	private boolean add(String word) {
+	private boolean addWord(String word) {
 		if (add(rootNode, word, 0)) {
 			size++;
 			int n = word.length();

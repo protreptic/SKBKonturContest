@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.List;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
@@ -14,6 +15,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import skbkonturcontest.main.Vocabulary;
+import skbkonturcontest.main.Word;
 
 public class ClientThread implements Runnable {
 	
@@ -86,17 +88,17 @@ public class ClientThread implements Runnable {
 								
 								String prefix = tokenizer.nextToken();
 								
-								String[] suggestions = vocabulary.findSuggestions(prefix);
+								List<Word> suggestions = vocabulary.findSuggestions(prefix);
 								
 								synchronized (System.out) {
-									System.out.println("[" + socket.getInetAddress() + ":" + socket.getPort() + "]: get -> " + prefix + " (" + ((suggestions != null) ? suggestions.length : "0") + ")"); 
+									System.out.println("[" + socket.getInetAddress() + ":" + socket.getPort() + "]: get -> " + prefix + " (" + ((suggestions != null) ? suggestions.size() : "0") + ")"); 
 								}
 								
-								if (suggestions != null) {
-									for (String suggestion : suggestions) {
+								if (!suggestions.isEmpty()) {
+									for (Word suggestion : suggestions) {
 										PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
 										
-										writer.println(suggestion);
+										writer.println(suggestion.getText());
 									}
 								}
 							}

@@ -1,5 +1,7 @@
 package skbkonturcontest.main;
 
+import java.util.List;
+
 public class TrieSuggestionQuery implements Runnable {
 
 	private Vocabulary vocabulary;
@@ -12,12 +14,12 @@ public class TrieSuggestionQuery implements Runnable {
 	
 	@Override
 	public void run() {
-		String[] suggestions = vocabulary.findSuggestions(prefix);
+		List<Word> suggestions = vocabulary.findSuggestions(prefix);
 		
-		if (suggestions != null) {
+		if (!suggestions.isEmpty()) {
 			synchronized (System.out) {
-				for (String suggestion : suggestions) {
-					System.out.println(suggestion);
+				for (Word suggestion : suggestions) {
+					System.out.println(suggestion.getText());
 				}
 				
 				System.out.println();						

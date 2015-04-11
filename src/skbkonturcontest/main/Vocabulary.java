@@ -1,7 +1,9 @@
 package skbkonturcontest.main;
 
+import java.util.List;
+
 public interface Vocabulary {
 	
-	public String[] findSuggestions(String prefix);
+	public List<Word> findSuggestions(String prefix);
 	
 }
