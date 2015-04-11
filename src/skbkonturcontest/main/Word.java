@@ -11,10 +11,10 @@ public class Word {
 	public void setText(String text) {
 		this.text = text;
 	}
-	public int getOccurenceFrequency() {
+	public int getOccurrenceFrequency() {
 		return occurenceFrequency;
 	}
-	public void setOccurenceFrequency(int occurenceFrequency) {
+	public void setOccurrenceFrequency(int occurenceFrequency) {
 		this.occurenceFrequency = occurenceFrequency;
 	}
 	

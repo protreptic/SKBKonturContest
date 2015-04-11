@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,15 +67,31 @@ public class TrieVocabulary implements Vocabulary {
 	public List<Word> findSuggestions(String prefix) {
 		List<Word> words = new ArrayList<Word>();
 		
-		for (String string : suggest(rootNode, prefix, 0)) {
-			Word word = new Word();
-			word.setText(string); 
-			word.setOccurenceFrequency(occr.get(string));  
-  			
-			words.add(word);
-		}
+		String[] suggestions = suggest(rootNode, prefix, 0);
 		
-		Collections.sort(words, null);
+		if (suggestions != null) {
+			for (String string : suggestions) {
+				Word word = new Word();
+				word.setText(string); 
+				word.setOccurrenceFrequency(occr.get(string));  
+	  			
+				words.add(word);
+			}
+			
+			if (words.size() > 1) {
+				Collections.sort(words, new Comparator<Word>() {
+	
+					@Override
+					public int compare(Word o1, Word o2) {
+						if (o1.getOccurrenceFrequency() == o2.getOccurrenceFrequency()) return 0;
+						if (o1.getOccurrenceFrequency() > o2.getOccurrenceFrequency()) return -1;
+						
+						return 1;
+					}
+						
+				});		
+			}
+		}
 		
 		return words;
 	}
