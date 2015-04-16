@@ -23,19 +23,24 @@
 		</jar>
 	</target>
 
-	<target name="runContest" depends="dist">
-		<exec executable="java" output="${bin}/output.txt">
+	<target name="PerfomanceTest.run" depends="dist">
+		<exec executable="java">
+			<arg value="-cp" />
+			<arg value="${bin}/SKBKonturContest.jar" />
+			<arg value="skbkonturcontest.main.PerfomanceTest" />
+			<arg value="${vocabulary_path}" />
+		</exec>
+	</target>
+
+	<target name="SKBConturContest.run" depends="dist">
+		<exec executable="java">
 			<arg value="-cp" />
 			<arg value="${bin}/SKBKonturContest.jar" />
 			<arg value="skbkonturcontest.main.SKBKonturContest" />
 			<arg value="${vocabulary_path}" />
 		</exec>
-
-		<exec executable="gedit">
-			<arg value="${bin}/output.txt" />
-		</exec>
 	</target>
-
+	
 	<target name="ServiceServer.run" depends="dist">
 		<exec executable="java">
 			<arg value="-cp" />
